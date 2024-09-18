@@ -19,6 +19,7 @@ func main() {
     store := db.New(conn)
     router := gin.Default()
 
+    // Rotas de produto
     router.GET("/api/products", func(ctx *gin.Context) {
         handlers.ListProducts(ctx, store)
     })
@@ -31,5 +32,23 @@ func main() {
         handlers.CreateProduct(ctx, store)
     })
 
+    // Rotas do carrinho
+    router.POST("/api/cart", func(ctx *gin.Context) {
+        handlers.CreateCart(ctx, store)
+    })
+
+    router.POST("/api/cart/items", func(ctx *gin.Context) {
+        handlers.AddItemToCart(ctx, store)
+    })
+
+    router.GET("/api/cart/items/:cart_id", func(ctx *gin.Context) {
+        handlers.ListCartItems(ctx, store)
+    })
+
+    router.GET("/api/cart/totals/:cart_id", func(ctx *gin.Context) {
+        handlers.GetCartTotals(ctx, store)
+    })
+
     router.Run(":8080")
 }
+

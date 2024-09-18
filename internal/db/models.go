@@ -4,6 +4,23 @@
 
 package db
 
+import (
+	"database/sql"
+)
+
+type Cart struct {
+	ID     int32
+	UserID int32
+}
+
+type CartItem struct {
+	ID        int32
+	CartID    sql.NullInt32
+	ProductID int32
+	Quantity  int32
+	Price     string
+}
+
 type Product struct {
 	ID    int32
 	Name  string
