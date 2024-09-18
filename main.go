@@ -1,7 +1,8 @@
 package main
 
 import (
-	"cart-api/api/handlers"
+	"cart-api/api/handlers/carrinho"
+	"cart-api/api/handlers/produtos"
 	"cart-api/internal/db"
 	"database/sql"
 	"log"
@@ -11,44 +12,38 @@ import (
 )
 
 func main() {
-    conn, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/shopping_cart?sslmode=disable")
-    if err != nil {
-        log.Fatal("cannot connect to db:", err)
-    }
+	// Conectar ao banco de dados PostgreSQL
+	dbConn, err := sql.Open("postgres", "user=postgres password=postgres dbname=shopping_cart sslmode=disable") // Ajuste a DSN conforme necessário
+	if err != nil {
+		log.Fatalf("Erro ao conectar ao banco de dados: %v", err)
+	}
+	defer dbConn.Close()
 
-    store := db.New(conn)
-    router := gin.Default()
+	// Inicializar o SQLC Queries
+	queries := db.New(dbConn)
 
-    // Rotas de produto
-    router.GET("/api/products", func(ctx *gin.Context) {
-        handlers.ListProducts(ctx, store)
-    })
+	// Inicializar o router Gin
+	r := gin.Default()
 
-    router.GET("/api/products/:id", func(ctx *gin.Context) {
-        handlers.GetProduct(ctx, store)
-    })
+	// Middleware para adicionar o store ao contexto
+	r.Use(func(c *gin.Context) {
+		c.Set("store", queries)
+		c.Next()
+	})
 
-    router.POST("/api/products", func(ctx *gin.Context) {
-        handlers.CreateProduct(ctx, store)
-    })
+	// Rotas para produtos
+	r.GET("/products", produtos.ListProducts)
+	r.GET("/products/:id", produtos.GetProduct)
+	r.POST("/products", produtos.CreateProduct)
 
-    // Rotas do carrinho
-    router.POST("/api/cart", func(ctx *gin.Context) {
-        handlers.CreateCart(ctx, store)
-    })
+	// Rotas para carrinho
+	r.POST("/carts/:user_id", carrinho.CreateCart)
+	r.POST("/carts/items", carrinho.AddItemToCart)
+	r.GET("/carts/:cart_id/items", carrinho.ListCartItems)
+	r.GET("/carts/:cart_id/total", carrinho.TotalCartValue)
 
-    router.POST("/api/cart/items", func(ctx *gin.Context) {
-        handlers.AddItemToCart(ctx, store)
-    })
-
-    router.GET("/api/cart/items/:cart_id", func(ctx *gin.Context) {
-        handlers.ListCartItems(ctx, store)
-    })
-
-    router.GET("/api/cart/totals/:cart_id", func(ctx *gin.Context) {
-        handlers.GetCartTotals(ctx, store)
-    })
-
-    router.Run(":8080")
+	// Iniciar o servidor
+	if err := r.Run(":8080"); err != nil {
+		log.Fatalf("Erro ao iniciar o servidor: %v", err)
+	}
 }
-

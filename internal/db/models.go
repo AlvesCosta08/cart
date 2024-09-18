@@ -9,15 +9,15 @@ import (
 )
 
 type Cart struct {
-	ID     int32
-	UserID int32
+	ID     int64
+	UserID int64
 }
 
 type CartItem struct {
-	ID        int32
+	ID        int64
 	CartID    sql.NullInt32
-	ProductID int32
-	Quantity  int32
+	ProductID int64
+	Quantity  int64
 	Price     string
 }
 

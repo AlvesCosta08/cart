@@ -15,10 +15,10 @@ INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES ($1, $2, $3
 `
 
 type AddItemToCartParams struct {
-	CartID    sql.NullInt32
+	CartID    int32
 	ProductID int32
 	Quantity  int32
-	Price     string
+	Price     int32
 }
 
 func (q *Queries) AddItemToCart(ctx context.Context, arg AddItemToCartParams) error {
@@ -81,9 +81,9 @@ const totalCartItems = `-- name: TotalCartItems :one
 SELECT COUNT(*) FROM cart_items WHERE cart_id = $1
 `
 
-func (q *Queries) TotalCartItems(ctx context.Context, cartID sql.NullInt32) (int64, error) {
+func (q *Queries) TotalCartItems(ctx context.Context, cartID int32) (int32, error) {
 	row := q.db.QueryRowContext(ctx, totalCartItems, cartID)
-	var count int64
+	var count int32
 	err := row.Scan(&count)
 	return count, err
 }
@@ -92,9 +92,9 @@ const totalCartValue = `-- name: TotalCartValue :one
 SELECT SUM(quantity * price) FROM cart_items WHERE cart_id = $1
 `
 
-func (q *Queries) TotalCartValue(ctx context.Context, cartID sql.NullInt32) (int64, error) {
+func (q *Queries) TotalCartValue(ctx context.Context, cartID sql.NullInt32) (int32, error) {
 	row := q.db.QueryRowContext(ctx, totalCartValue, cartID)
-	var sum int64
+	var sum int32
 	err := row.Scan(&sum)
 	return sum, err
 }
