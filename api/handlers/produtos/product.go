@@ -37,31 +37,42 @@ func GetProduct(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, product)
 }
 
+
+// Define a estrutura Product
+type Product struct {
+    Name  string `json:"name" binding:"required"`
+    Price string `json:"price" binding:"required"`
+}
+
 // CreateProduct cria um novo produto
 func CreateProduct(ctx *gin.Context) {
-	store := ctx.MustGet("store").(*db.Queries)
-	var newProduct struct {
-		Name  string  `json:"name" binding:"required"`
-		Price float64 `json:"price" binding:"required"`
-	}
+    store := ctx.MustGet("store").(*db.Queries)
+    var newProduct Product
 
-	if err := ctx.ShouldBindJSON(&newProduct); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
+    if err := ctx.ShouldBindJSON(&newProduct); err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input", "details": err.Error()})
+        return
+    }
 
-	// Converte o float64 para string
-	priceStr := strconv.FormatFloat(newProduct.Price, 'f', 2, 64)
+    // Converter o preço de string para float64
+    price, err := strconv.ParseFloat(newProduct.Price, 64)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid price format", "details": err.Error()})
+        return
+    }
 
-	createdProduct, err := store.CreateProduct(ctx, db.CreateProductParams{
-		Name:  newProduct.Name,
-		Price: priceStr,
-	})
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create product"})
-		return
-	}
+    // Se o Price precisa ser convertido para string para a consulta
+    priceStr := strconv.FormatFloat(price, 'f', 2, 64)
 
-	ctx.JSON(http.StatusCreated, createdProduct)
+    createdProduct, err := store.CreateProduct(ctx, db.CreateProductParams{
+        Name:  newProduct.Name,
+        Price: priceStr,
+    })
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create product", "details": err.Error()})
+        return
+    }
+
+    ctx.JSON(http.StatusCreated, createdProduct)
 }
 

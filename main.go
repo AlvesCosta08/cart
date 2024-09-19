@@ -37,7 +37,7 @@ func main() {
 	r.POST("/products", produtos.CreateProduct)
 
 	// Rotas para carrinho
-	r.POST("/carts/:user_id", carrinho.CreateCart)
+	r.POST("/carts", carrinho.CreateCart)
 	r.POST("/carts/items", carrinho.AddItemToCart)
 	r.GET("/carts/:cart_id/items", carrinho.ListCartItems)
 	r.GET("/carts/:cart_id/total", carrinho.TotalCartValue)

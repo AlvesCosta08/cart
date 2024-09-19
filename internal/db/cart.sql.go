@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"log"
 	"database/sql"
 )
 
@@ -88,13 +89,25 @@ func (q *Queries) TotalCartItems(ctx context.Context, cartID int32) (int32, erro
 	return count, err
 }
 
-const totalCartValue = `-- name: TotalCartValue :one
-SELECT SUM(quantity * price) FROM cart_items WHERE cart_id = $1
+const totalCartValue = `
+-- name: TotalCartValue :one
+SELECT COALESCE(SUM(quantity * price), 0) FROM cart_items WHERE cart_id = $1
 `
 
-func (q *Queries) TotalCartValue(ctx context.Context, cartID sql.NullInt32) (int32, error) {
-	row := q.db.QueryRowContext(ctx, totalCartValue, cartID)
-	var sum int32
-	err := row.Scan(&sum)
-	return sum, err
+// Função gerada pelo SQLC que executa a query para calcular o valor total
+func (q *Queries) TotalCartValue(ctx context.Context, cartID int32) (float64, error) {
+    row := q.db.QueryRowContext(ctx, totalCartValue, cartID)
+    var sum float64
+    err := row.Scan(&sum)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            log.Printf("No items found for cart ID %d", cartID)
+            return 0, nil
+        }
+        log.Printf("Error scanning total value for cart ID %d: %v", cartID, err)
+        return 0, err
+    }
+    return sum, nil
 }
+
+
