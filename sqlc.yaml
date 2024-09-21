@@ -1,7 +1,9 @@
 version: "1"
 packages:
   - name: "db"
-    path: "internal/db"
-    queries: "db/queries"
-    schema: "db/migrations"
+    path: "internal/db"            # Caminho para o pacote onde os arquivos gerados serão salvos
+    queries: "db/queries/*.sql"    # Aponte para arquivos SQL específicos ou um diretório
+    schema: "db/migrations/*.sql"   # Caminho para seus arquivos de migração
     engine: "postgresql"
+
+

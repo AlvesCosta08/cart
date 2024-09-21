@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS "pedido" (
+  id SERIAL PRIMARY KEY,
+  carrinho_id INT REFERENCES carrinho(id),
+  status VARCHAR(50) NOT NULL,
+  total NUMERIC(10, 2) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

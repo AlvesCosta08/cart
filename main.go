@@ -41,6 +41,8 @@ func main() {
 	r.POST("/carts/items", carrinho.AddItemToCart)
 	r.GET("/carts/:cart_id/items", carrinho.ListCartItems)
 	r.GET("/carts/:cart_id/total", carrinho.TotalCartValue)
+	r.POST("/carts/:cart_id/checkout", carrinho.CheckoutCart)
+
 
 	// Iniciar o servidor
 	if err := r.Run(":8080"); err != nil {

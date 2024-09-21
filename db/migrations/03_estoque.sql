@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS "estoque" (
+  id SERIAL PRIMARY KEY,
+  produto_id INT REFERENCES produto(id),
+  quantidade INT NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
