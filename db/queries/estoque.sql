@@ -1,11 +1,13 @@
--- name: CreateStock
-INSERT INTO "estoque" (id_produto, quantidade_atual, estoque_minimo) VALUES ($1, $2, $3) RETURNING id_produto;
+-- name: CreateStock :exec
+INSERT INTO "estoque" (id_produto, quantidade_atual) VALUES ($1, $2) RETURNING id;
 
--- name: GetStockByProductID
+-- name: GetStockByProductID :one
 SELECT * FROM "estoque" WHERE id_produto = $1;
 
--- name: UpdateStock
-UPDATE "estoque" SET quantidade_atual = $1, estoque_minimo = $2 WHERE id_produto = $3;
+-- name: UpdateStock :exec
+UPDATE "estoque" SET quantidade_atual = $1 WHERE id_produto = $2;
 
--- name: DeleteStock
+-- name: DeleteStock :exec
 DELETE FROM "estoque" WHERE id_produto = $1;
+
+

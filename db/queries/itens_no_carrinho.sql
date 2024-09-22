@@ -1,11 +1,13 @@
--- name: AddItemToCart
-INSERT INTO "itens_no_carrinho" (cart_id, product_id, quantity, price) VALUES ($1, $2, $3, $4) RETURNING id;
+-- name: AddItemToCart :exec
+INSERT INTO "itens_no_carrinho" (cart_id, produto_id, quantidade, preco_unitario) VALUES ($1, $2, $3, $4) RETURNING id;
 
--- name: GetItemsByCartID
+-- name: GetItemsByCartID :many
 SELECT * FROM "itens_no_carrinho" WHERE cart_id = $1;
 
--- name: UpdateCartItem
-UPDATE "itens_no_carrinho" SET quantity = $1, price = $2 WHERE id = $3;
+-- name: UpdateCartItem :exec
+UPDATE "itens_no_carrinho" SET quantidade = $1, preco_unitario = $2 WHERE id = $3;
 
--- name: DeleteCartItem
+-- name: DeleteCartItem :exec
 DELETE FROM "itens_no_carrinho" WHERE id = $1;
+
+

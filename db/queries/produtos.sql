@@ -1,11 +1,13 @@
--- name: CreateProduct
-INSERT INTO "produto" (referencia, descricao, un_medida, preco_unitario, id_categoria) VALUES ($1, $2, $3, $4, $5) RETURNING id_produto;
+-- name: CreateProduct :exec
+INSERT INTO "produto" (name, price, referencia, categoria_id) VALUES ($1, $2, $3, $4) RETURNING id_produto;
 
--- name: GetProductByID
+-- name: GetProductByID :one
 SELECT * FROM "produto" WHERE id_produto = $1;
 
--- name: UpdateProduct
-UPDATE "produto" SET referencia = $1, descricao = $2, un_medida = $3, preco_unitario = $4, id_categoria = $5 WHERE id_produto = $6;
+-- name: UpdateProduct :exec
+UPDATE "produto" SET name = $1, price = $2, referencia = $3, categoria_id = $4 WHERE id_produto = $5;
 
--- name: DeleteProduct
+-- name: DeleteProduct :exec
 DELETE FROM "produto" WHERE id_produto = $1;
+
+

@@ -1,11 +1,13 @@
--- name: CreateCategory
-INSERT INTO "categoria" (nome, sub_categoria) VALUES ($1, $2) RETURNING id_categoria;
+-- name: CreateCategory :exec
+INSERT INTO "categoria" (nome, description) VALUES ($1, $2) RETURNING id_categoria;
 
--- name: GetCategoryByID
+-- name: GetCategoryByID :one
 SELECT * FROM "categoria" WHERE id_categoria = $1;
 
--- name: UpdateCategory
-UPDATE "categoria" SET nome = $1, sub_categoria = $2 WHERE id_categoria = $3;
+-- name: UpdateCategory :exec
+UPDATE "categoria" SET nome = $1, description = $2 WHERE id_categoria = $3;
 
--- name: DeleteCategory
+-- name: DeleteCategory :exec
 DELETE FROM "categoria" WHERE id_categoria = $1;
+
+

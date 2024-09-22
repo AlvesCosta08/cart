@@ -1,5 +1,6 @@
--- name: CreateDocument
-INSERT INTO "documento" (CPF, CNPJ) VALUES ($1, $2);
+-- name: CreateDocument :exec
+INSERT INTO "documento" (cliente_id, tipo_documento, numero_documento, cpf) VALUES ($1, $2, $3, $4) RETURNING id;
 
--- name: GetDocumentByClientID
-SELECT * FROM "documento" WHERE id_cliente = $1;
+-- name: GetDocumentByClientID :one
+SELECT * FROM "documento" WHERE cliente_id = $1;
+
