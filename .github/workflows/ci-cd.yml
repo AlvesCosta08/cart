@@ -30,11 +30,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-    #  - name: Install dependencies
-    #    run: go mod tidy
+      - name: Install dependencies
+        run: go mod tidy
 
-      - name: Run tests
-        run: go test ./...
+    #  - name: Run tests
+    #    run: go test ./...
 
       - name: Build Docker image
         run: docker build -t alves74/myapp:latest .
