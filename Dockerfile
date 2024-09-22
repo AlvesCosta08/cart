@@ -9,6 +9,6 @@ RUN go build -o main .
 # Etapa 2: Executar o binário
 FROM alpine:latest
 WORKDIR /root/
-COPY --from=builder /app/main .
+COPY --from=builder /app/cmd/main .
 CMD ["./main"]
 
