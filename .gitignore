@@ -1,0 +1,6 @@
+# Ignorar arquivo de configuração de ambiente
+.env
+
+# Outros arquivos ou pastas que você deseja ignorar
+*.log
+node_modules/
