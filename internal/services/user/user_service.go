@@ -36,22 +36,34 @@ func NewUserService(repo  userRepository.UserRepository) UserService {
 }
 
 // CreateUser cria um novo usuário.
+// CreateUser cria um novo usuário.
 func (s *userService) CreateUser(ctx context.Context, nome, email, senha string) error {
-	// Validação
+	var validationErrors []string
+
+	// Validação do nome
 	if err := s.validator.Var(nome, "required"); err != nil {
-		return fmt.Errorf("nome: %w", err)
+		validationErrors = append(validationErrors, fmt.Sprintf("nome: %v", err))
 	}
+
+	// Validação do email
 	if err := s.validator.Var(email, "required,email"); err != nil {
-		return fmt.Errorf("email: %w", err)
+		validationErrors = append(validationErrors, fmt.Sprintf("email: %v", err))
 	}
+
+	// Validação da senha
 	if err := s.validator.Var(senha, "required,min=6"); err != nil {
-		return fmt.Errorf("senha: %w", err)
+		validationErrors = append(validationErrors, fmt.Sprintf("senha: %v", err))
+	}
+
+	// Se houver erros de validação, retorne-os.
+	if len(validationErrors) > 0 {
+		return fmt.Errorf("erros de validação: %v", validationErrors)
 	}
 
 	// Hash da senha
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(senha), bcrypt.DefaultCost)
 	if err != nil {
-		return fmt.Errorf("falha ao hash da senha: %w", err)
+		return fmt.Errorf("falha ao gerar hash da senha: %w", err)
 	}
 
 	params := db.CreateUserParams{
@@ -62,6 +74,7 @@ func (s *userService) CreateUser(ctx context.Context, nome, email, senha string)
 
 	return s.repo.CreateUser(ctx, params)
 }
+
 
 // DeleteUser remove um usuário.
 func (s *userService) DeleteUser(ctx context.Context, idUser int32) error {
