@@ -1,4 +1,4 @@
-package user_test
+package user
 
 import (
 	sqlc "cart-api/db/sqlc"
