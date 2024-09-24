@@ -24,7 +24,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	var input struct {
 		Nome  string `json:"nome" binding:"required"`
 		Email string `json:"email" binding:"required,email"`
-		Senha string `json:"senha" binding:"required,min=6"`
+		Senha string `json:"senha" binding:"required,min=3"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -75,7 +75,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	var input struct {
 		Nome  string `json:"nome" binding:"required"`
 		Email string `json:"email" binding:"required,email"`
-		Senha string `json:"senha"` // senha pode ser opcional
+		Senha string `json:"senha,omitempty"` 
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {

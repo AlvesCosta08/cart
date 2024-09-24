@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type Config struct {
@@ -17,15 +18,13 @@ type Config struct {
 
 // LoadConfig carrega a configuração com base no ambiente
 func LoadConfig() Config {
-	env := os.Getenv("APP_ENV")
-	if env == "" {
-		env = "local" // Define o padrão como "local"
-	}
+	// Verifica o diretório atual
+	log.Println("Diretório atual:", os.Getenv("PWD"))
 
-	// Carregar o arquivo .env correspondente
-	envFile := ".env." + env
-	if err := godotenv.Load(envFile); err != nil {
-		log.Fatalf("Erro ao carregar o arquivo %s: %v", envFile, err)
+	// Carregar o arquivo .env do diretório pai
+	log.Println("Tentando carregar o arquivo .env")
+	if err := godotenv.Load("../.env"); err != nil {
+		log.Fatalf("Erro ao carregar o arquivo .env: %v", err)
 	}
 
 	// Carregar as configurações
@@ -37,7 +36,7 @@ func LoadConfig() Config {
 		DBPort:     getEnv("DB_PORT"),
 	}
 
-	log.Printf("Configurações carregadas para o ambiente: %s", env)
+	log.Printf("Configurações carregadas: %+v", config)
 	return config
 }
 
@@ -45,10 +44,13 @@ func LoadConfig() Config {
 func getEnv(key string) string {
 	value := os.Getenv(key)
 	if value == "" {
-		log.Fatalf("Environment variable %s is required but not set", key)
+		log.Fatalf("A variável de ambiente %s é obrigatória, mas não está definida", key)
 	}
 	return value
 }
+
+
+
 
 
 

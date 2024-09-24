@@ -17,6 +17,7 @@ type UserService interface {
 	DeleteUser(ctx context.Context, idUser int32) error
 	GetUserByID(ctx context.Context, idUser int32) (db.User, error)
 	UpdateUser(ctx context.Context, idUser int32, nome, email, senha string) error
+	GetAllUsers(ctx context.Context) ([]db.User, error) 
 }
 
 
@@ -51,7 +52,7 @@ func (s *userService) CreateUser(ctx context.Context, nome, email, senha string)
 	}
 
 	// Validação da senha
-	if err := s.validator.Var(senha, "required,min=6"); err != nil {
+	if err := s.validator.Var(senha, "required,min=3"); err != nil {
 		validationErrors = append(validationErrors, fmt.Sprintf("senha: %v", err))
 	}
 
@@ -74,7 +75,6 @@ func (s *userService) CreateUser(ctx context.Context, nome, email, senha string)
 
 	return s.repo.CreateUser(ctx, params)
 }
-
 
 // DeleteUser remove um usuário.
 func (s *userService) DeleteUser(ctx context.Context, idUser int32) error {
@@ -112,4 +112,13 @@ func (s *userService) UpdateUser(ctx context.Context, idUser int32, nome, email,
 	}
 
 	return s.repo.UpdateUser(ctx, params)
+}
+
+// GetAllUsers retorna uma lista de todos os usuários.
+func (s *userService) GetAllUsers(ctx context.Context) ([]db.User, error) {
+	users, err := s.repo.GetAllUsers(ctx)
+	if err != nil {
+		return nil, err // Retorna o erro se houver.
+	}
+	return users, nil // Retorna a lista de usuários (pode ser vazia).
 }

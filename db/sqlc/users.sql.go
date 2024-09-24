@@ -33,6 +33,39 @@ func (q *Queries) DeleteUser(ctx context.Context, idUser int32) error {
 	return err
 }
 
+const getAllUsers = `-- name: GetAllUsers :many
+SELECT id_user, nome, email, senha, created_at FROM "user"
+`
+
+func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getAllUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.IDUser,
+			&i.Nome,
+			&i.Email,
+			&i.Senha,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserByID = `-- name: GetUserByID :one
 SELECT id_user, nome, email, senha, created_at FROM "user" WHERE id_user = $1
 `
