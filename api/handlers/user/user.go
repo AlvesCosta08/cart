@@ -112,3 +112,12 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil) 
 }
 
+// GetAllUsersHandler retorna uma lista de todos os usuários.
+func (h *UserHandler) GetAllUsersHandler(c *gin.Context) {
+	users, err := h.service.GetAllUsers(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao buscar usuários"})
+		return
+	}
+	c.JSON(http.StatusOK, users)
+}

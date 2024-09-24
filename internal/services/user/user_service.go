@@ -37,7 +37,6 @@ func NewUserService(repo  userRepository.UserRepository) UserService {
 }
 
 // CreateUser cria um novo usuário.
-// CreateUser cria um novo usuário.
 func (s *userService) CreateUser(ctx context.Context, nome, email, senha string) error {
 	var validationErrors []string
 
@@ -118,7 +117,7 @@ func (s *userService) UpdateUser(ctx context.Context, idUser int32, nome, email,
 func (s *userService) GetAllUsers(ctx context.Context) ([]db.User, error) {
 	users, err := s.repo.GetAllUsers(ctx)
 	if err != nil {
-		return nil, err // Retorna o erro se houver.
+		return nil, err 
 	}
-	return users, nil // Retorna a lista de usuários (pode ser vazia).
+	return users, nil 
 }

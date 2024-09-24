@@ -55,11 +55,10 @@ UPDATE "categoria" SET nome = $1, description = $2 WHERE id_categoria = $3
 
 type UpdateCategoryParams struct {
 	Nome        string
-	Description sql.NullString
-	IDCategoria int32
+	Description string	
 }
 
 func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) error {
-	_, err := q.db.ExecContext(ctx, updateCategory, arg.Nome, arg.Description, arg.IDCategoria)
+	_, err := q.db.ExecContext(ctx, updateCategory, arg.Nome, arg.Description)
 	return err
 }
