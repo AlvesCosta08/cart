@@ -2,38 +2,40 @@ package main
 
 import (
 	"cart-api/api"
-	"cart-api/config"
+	config "cart-api/config"
+	"database/sql"
+	"fmt"
 	"log"
 
-	"github.com/joho/godotenv"
+	_ "github.com/lib/pq" // Importação do driver PostgreSQL
 )
 
 func main() {
-	// Carregar variáveis de ambiente
-	loadEnv()
-
-	// Carregar a configuração
+	// Carregar configuração
 	cfg := config.LoadConfig()
 
-	// Iniciar o servidor da API
-	startServer(cfg)
-}
-
-// loadEnv carrega as variáveis do arquivo .env
-func loadEnv() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Erro ao carregar o arquivo .env: %v", err)
+	// Conectar ao banco de dados
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
+		cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBHost, cfg.DBPort)
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal("não foi possível conectar ao banco de dados:", err)
 	}
-}
 
-// startServer inicializa o servidor com a configuração fornecida
-func startServer(cfg config.Config) {
-	router := api.SetupRouter()
+	// Garantir que a conexão foi estabelecida
+	if err = db.Ping(); err != nil {
+		log.Fatal("não foi possível verificar a conexão ao banco de dados:", err)
+	}
+	log.Println("Conexão ao banco de dados estabelecida com sucesso.")
 
-	// Inicia o servidor e trata erros
+	// Passar a conexão para a função SetupRouter
+	router := api.SetupRouter(db)
+
+	// Iniciar o servidor na porta 8080
+	log.Println("Iniciando o servidor na porta 8080...")
 	if err := router.Run(":8080"); err != nil {
-		log.Fatalf("Erro ao iniciar o servidor: %v", err)
+		log.Fatal("não foi possível iniciar o servidor:", err)
 	}
-
-	log.Printf("Servidor rodando na porta :8080 com o banco: %s", cfg.DBName)
 }
+
+
